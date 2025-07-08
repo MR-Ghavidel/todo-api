@@ -1,5 +1,6 @@
 
 const express = require('express');
+const Todo = require('./models/Todo');
 
 const app = express();
 app.use(express.json());
@@ -28,8 +29,13 @@ app.get('/', (req, res) => {
   res.send('Hello, World! Welcome to our To-Do API.');
 });
 
-app.get('/todos', (req, res) => {
-  res.json(todos);
+app.get('/todos', async (req, res) => {
+  try {
+    const allTodos = await Todo.find({});
+    res.json(allTodos);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error while fetching todos' });
+  }
 });
 
 app.get('/todos/:id', (req, res) => {
