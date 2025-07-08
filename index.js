@@ -52,6 +52,28 @@ app.post('/todos', (req, res) => {
   res.status(201).json(newTodo);
 });
 
+// PUT req
+app.put('/todos/:id', (req, res) => {
+
+  const todoId = parseInt(req.params.id);
+  const todo = todos.find(t => t.id === todoId);
+
+  if (!todo) {
+    return res.status(404).send('Todo not found!');
+  }
+
+  if (typeof req.body.task !== 'string' || typeof req.body.completed !== 'boolean') {
+    return res.status(400).send('Invalid data provided.');
+  }
+
+  todo.task = req.body.task;
+  todo.completed = req.body.completed;
+
+  // 5. Send back the updated todo
+  res.json(todo);
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
