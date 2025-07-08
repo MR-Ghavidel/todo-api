@@ -38,17 +38,24 @@ app.get('/todos', async (req, res) => {
   }
 });
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'Todo not found' });
+    }
+    
+    const todo = await Todo.findById(id);
+    
+    if (!todo) {
+      return res.status(404).json({ error: 'Todo not found' });
+    }
 
-  const todoId = parseInt(req.params.id);
-
-  const todo = todos.find(t => t.id === todoId);
-
-  if (!todo) {
-    return res.status(404).send('Todo not found!');
+    res.json(todo);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error while fetching todo' });
   }
-
-  res.json(todo);
 });
 
 // POST req
