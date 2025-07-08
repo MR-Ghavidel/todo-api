@@ -73,6 +73,20 @@ app.put('/todos/:id', (req, res) => {
   res.json(todo);
 });
 
+// DELETE req
+app.delete('/todos/:id', (req, res) => {
+
+  const todoId = parseInt(req.params.id);
+  const todoIndex = todos.findIndex(t => t.id === todoId);
+
+  if (todoIndex === -1) {
+    return res.status(404).send('Todo not found!');
+  }
+
+  todos.splice(todoIndex, 1);
+
+  res.status(204).send();
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
