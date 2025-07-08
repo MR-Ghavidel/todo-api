@@ -52,21 +52,22 @@ app.get('/todos/:id', (req, res) => {
 });
 
 // POST req
-app.post('/todos', (req, res) => {
+app.post('/todos', async (req, res) => {
+  try {
 
-  if (!req.body.task) {
-    return res.status(400).json({ error: 'Task is required' });
+    if (!req.body.task) {
+      return res.status(400).json({ error: 'Task is required' });
+    }
+
+    const newTodo = await Todo.create({
+      task: req.body.task,
+    });
+
+    res.status(201).json(newTodo);
+
+  } catch (error) {
+    res.status(500).json({ error: 'Server error while creating todo' });
   }
-
-  const newTodo = {
-    id: todos.length > 0 ? todos[todos.length - 1].id + 1 : 1,
-    task: req.body.task,
-    completed: false
-  };
-
-  todos.push(newTodo);
-
-  res.status(201).json(newTodo);
 });
 
 // PUT req
