@@ -2,9 +2,20 @@
 const express = require('express');
 
 const app = express();
-// Middleware to parse JSON bodies
 app.use(express.json());
 const PORT = 3000;
+
+require('dotenv').config();
+
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('Connected to MongoDB!');
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+  });
 
 const todos = [
   { id: 1, task: 'Learn Node.js basics', completed: true },
