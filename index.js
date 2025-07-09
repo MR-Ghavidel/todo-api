@@ -18,12 +18,6 @@ mongoose.connect(process.env.MONGO_URI)
     console.error('Error connecting to MongoDB:', error);
   });
 
-const todos = [
-  { id: 1, task: 'Learn Node.js basics', completed: true },
-  { id: 2, task: 'Build a simple API', completed: false },
-  { id: 3, task: 'Connect to a database', completed: false }
-];
-
 // GET reqs
 app.get('/', (req, res) => {
   res.send('Hello, World! Welcome to our To-Do API.');
@@ -108,18 +102,24 @@ app.put('/todos/:id', async (req, res) => {
 });
 
 // DELETE req
-app.delete('/todos/:id', (req, res) => {
+app.delete('/todos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const todoId = parseInt(req.params.id);
-  const todoIndex = todos.findIndex(t => t.id === todoId);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'Todo not found' });
+    }
 
-  if (todoIndex === -1) {
-    return res.status(404).send('Todo not found!');
+    const deletedTodo = await Todo.findByIdAndDelete(id);
+
+    if (!deletedTodo) {
+      return res.status(404).json({ error: 'Todo not found' });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Server error while deleting todo' });
   }
-
-  todos.splice(todoIndex, 1);
-
-  res.status(204).send();
 });
 
 app.listen(PORT, () => {
