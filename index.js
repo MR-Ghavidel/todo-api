@@ -47,7 +47,7 @@ app.get('/todos/:id', async (req, res) => {
     }
     
     const todo = await Todo.findById(id);
-    
+
     if (!todo) {
       return res.status(404).json({ error: 'Todo not found' });
     }
@@ -78,24 +78,33 @@ app.post('/todos', async (req, res) => {
 });
 
 // PUT req
-app.put('/todos/:id', (req, res) => {
+app.put('/todos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { task, completed } = req.body;
 
-  const todoId = parseInt(req.params.id);
-  const todo = todos.find(t => t.id === todoId);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'Todo not found' });
+    }
 
-  if (!todo) {
-    return res.status(404).send('Todo not found!');
+    if (typeof task !== 'string' || typeof completed !== 'boolean') {
+      return res.status(400).json({ error: 'Invalid data provided.' });
+    }
+
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      id,
+      { task, completed },
+      { new: true }
+    );
+
+    if (!updatedTodo) {
+      return res.status(404).json({ error: 'Todo not found' });
+    }
+
+    res.json(updatedTodo);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error while updating todo' });
   }
-
-  if (typeof req.body.task !== 'string' || typeof req.body.completed !== 'boolean') {
-    return res.status(400).send('Invalid data provided.');
-  }
-
-  todo.task = req.body.task;
-  todo.completed = req.body.completed;
-
-  // 5. Send back the updated todo
-  res.json(todo);
 });
 
 // DELETE req
