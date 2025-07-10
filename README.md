@@ -1,24 +1,25 @@
 # To-Do List API
 
-A simple and robust RESTful API for managing a to-do list, built with Node.js, Express, and MongoDB. This project covers all fundamental CRUD (Create, Read, Update, Delete) operations and serves as a solid foundation for backend development practices.
+A simple yet robust RESTful API for managing a to-do list, built with a focus on professional backend development practices including MVC architecture, Dependency Injection, and caching with Redis.
 
 ---
 
 ## Features
 
-- ✅ **Create** a new task.
-- ✅ **Read** all tasks from the database.
-- ✅ **Read** a single task by its unique ID.
-- ✅ **Update** an existing task's content and completion status.
-- ✅ **Delete** a task from the database.
+- ✅ **Create**, **Read**, **Update**, and **Delete** (CRUD) operations for tasks.
+- ✅ **MVC Architecture** for clean, scalable, and maintainable code.
+- ✅ **Dependency Injection (DI)** pattern for loosely coupled and testable controllers.
+- ✅ **Redis Caching** implemented for `GET /todos` route to significantly improve performance.
+- ✅ **Cache Invalidation** logic to ensure data consistency after any write operation (Create, Update, Delete).
 
 ---
 
 ## Technologies Used
 
 - **Backend:** Node.js, Express.js
-- **Database:** MongoDB (with Mongoose ODM)
-- **Environment Variables:** `dotenv` for secure configuration management.
+- **Database:** MongoDB (with Mongoose)
+- **Caching:** Redis
+- **Environment Variables:** `dotenv`
 - **Version Control:** Git & GitHub
 
 ---
@@ -29,11 +30,11 @@ The base URL for the API is `http://localhost:3000`.
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/todos` | Retrieve all tasks. |
+| `GET` | `/todos` | Retrieve all tasks (served from cache if available). |
 | `GET` | `/todos/:id` | Retrieve a single task by its ID. |
-| `POST` | `/todos` | Create a new task. |
-| `PUT` | `/todos/:id` | Update an existing task. |
-| `DELETE`| `/todos/:id` | Delete a task. |
+| `POST` | `/todos` | Create a new task and invalidate the cache. |
+| `PUT` | `/todos/:id` | Update an existing task and invalidate the cache. |
+| `DELETE`| `/todos/:id` | Delete a task and invalidate the cache. |
 
 ---
 
@@ -51,9 +52,12 @@ The base URL for the API is `http://localhost:3000`.
     ```bash
     npm install
     ```
-4.  Create a `.env` file in the root directory and add your MongoDB connection string:
+4.  Create a `.env` file in the root directory and add your credentials:
     ```
     MONGO_URI=your_mongodb_connection_string
+    REDIS_HOST=your_redis_host
+    REDIS_PORT=your_redis_port
+    REDIS_PASSWORD=your_redis_password
     ```
 5.  Start the server:
     ```bash
